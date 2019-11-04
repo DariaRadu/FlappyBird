@@ -14,7 +14,7 @@
 BirdController::BirdController(GameObject *gameObject) : Component(gameObject) {
     // initiate bird physics
 	auto phys = gameObject->getComponent<PhysicsComponent>();
-	phys->setLinearVelocity(glm::vec2(2, 0));
+	phys->setLinearVelocity(glm::vec2(1, 0));
 }
 
 bool BirdController::onKey(SDL_Event &event) {
@@ -24,7 +24,7 @@ bool BirdController::onKey(SDL_Event &event) {
 		switch (event.key.keysym.sym) {
 			case SDLK_SPACE:
 				std::cout << "space" << std::endl;
-				phys->addImpulse(glm::vec2(0.0, 0.2));
+				phys->addImpulse(glm::vec2(0, 0.15));
 				break;
 		}
 		
@@ -35,7 +35,19 @@ bool BirdController::onKey(SDL_Event &event) {
 }
 
 void BirdController::onCollisionStart(PhysicsComponent *comp) {
-    std::cout << "bird collided with something" << std::endl;
+    
+	auto gameObject = comp->getGameObject();
+
+	if (gameObject->name.find("Wall") != std::string::npos) {
+		std::cout << "bird collided with wall" << std::endl;
+		BirdGame::instance->setGameState(GameState::GameOver);
+	}
+
+	if (gameObject->name == "coin") {
+		std::cout << "bird collided with coin" << std::endl;
+		auto spriteComponent = gameObject->getComponent<SpriteComponent>();
+		gameObject->removeComponent(spriteComponent);
+	}
 }
 
 void BirdController::onCollisionEnd(PhysicsComponent *comp) {

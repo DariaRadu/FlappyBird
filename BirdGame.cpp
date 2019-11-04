@@ -61,7 +61,7 @@ void BirdGame::init() {
     birdObj->name = "Bird";
     camera->setFollowObject(birdObj, {+150,BirdGame::windowSize.y/2});
     auto so = birdObj->addComponent<SpriteComponent>();
-    auto sprite = spriteAtlas->get("bird1.png");
+    auto sprite = spriteAtlas->get("bird2.png");
     sprite.setScale({2,2});
 
     birdObj->setPosition({-100,300});
@@ -115,6 +115,25 @@ void BirdGame::init() {
 		auto phys = obj->addComponent<PhysicsComponent>();
 		phys->initBox(b2_staticBody, glm::vec2(s.x / physicsScale, s.y / physicsScale), { pos.x / physicsScale,pos.y / physicsScale }, 1);
     }
+
+	auto spriteCoin = spriteAtlas->get("coin.png");
+	spriteTop.setScale({ 2,2 });
+
+	for (int i = 0; i < length; i++) {
+		auto coinObj = createGameObject();
+		coinObj->name = "coin";
+		auto so = coinObj->addComponent<SpriteComponent>();
+
+		float xOffset = xVariation * (cos(i * curve * 0.2f) + 3);
+		glm::vec2 pos{ i * 300 + xOffset, (windowSize.y - spriteCoin.getSpriteSize().y / 2 + sin(i * curve) * heighVariation) / 2 };
+		coinObj->setPosition(pos);
+		glm::vec2 s{ spriteCoin.getSpriteSize().x * spriteCoin.getScale().x / 2, spriteCoin.getSpriteSize().y * spriteCoin.getScale().y / 2 };
+		so->setSprite(spriteCoin);
+
+		auto phys = coinObj->addComponent<PhysicsComponent>();
+		phys->initCircle(b2_staticBody, 12/physicsScale, glm::vec2(coinObj ->getPosition().x /physicsScale, coinObj->getPosition().y / physicsScale), 1);
+		phys->setSensor(true);
+	}
 
     background1Component.init("background.png");
     background2Component.init("background2.png");
